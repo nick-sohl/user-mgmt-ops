@@ -93,7 +93,10 @@ ingress:
 
 certManager:
   clusterIssuer:
-    enabled: true
+    # Whether this release manages (creates) the ClusterIssuer resource.
+    # Only one release should own it since it is cluster-scoped.
+    create: true
+    # Name referenced by every Ingress via the cert-manager annotation.
     name: letsencrypt-prod
     server: https://acme-v02.api.letsencrypt.org/directory
     email: stefan.furrer@edu.teko.ch

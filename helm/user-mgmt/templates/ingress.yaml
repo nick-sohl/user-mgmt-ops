@@ -6,8 +6,8 @@ metadata:
   labels:
     {{- include "user-mgmt.backend.labels" . | nindent 4 }}
   annotations:
-    {{- if .Values.certManager.clusterIssuer.enabled }}
-    cert-manager.io/cluster-issuer: {{ .Values.certManager.clusterIssuer.name | quote }}
+    {{- with .Values.certManager.clusterIssuer.name }}
+    cert-manager.io/cluster-issuer: {{ . | quote }}
     {{- end }}
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
@@ -38,8 +38,8 @@ metadata:
   labels:
     {{- include "user-mgmt.frontend.labels" . | nindent 4 }}
   annotations:
-    {{- if .Values.certManager.clusterIssuer.enabled }}
-    cert-manager.io/cluster-issuer: {{ .Values.certManager.clusterIssuer.name | quote }}
+    {{- with .Values.certManager.clusterIssuer.name }}
+    cert-manager.io/cluster-issuer: {{ . | quote }}
     {{- end }}
 spec:
   ingressClassName: {{ .Values.ingress.className }}
