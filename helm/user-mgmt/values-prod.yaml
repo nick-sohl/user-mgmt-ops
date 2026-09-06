@@ -1,0 +1,15 @@
+# Production environment overrides.
+# Applied on top of values.yaml.
+# The default values.yaml already targets production sizing and host,
+# so this file mostly enables the isolation policies.
+
+resourceQuota:
+  enabled: true
+  hard:
+    requests.cpu: "2"
+    requests.memory: 4Gi
+    limits.cpu: "8"
+    limits.memory: 8Gi
+
+networkPolicy:
+  enabled: true

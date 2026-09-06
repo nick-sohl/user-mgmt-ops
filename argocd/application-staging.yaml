@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: user-mgmt
+  name: user-mgmt-staging
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
@@ -12,10 +12,13 @@ spec:
     targetRevision: main
     path: helm/user-mgmt
     helm:
-      releaseName: user-mgmt
+      releaseName: user-mgmt-staging
+      valueFiles:
+        - values.yaml
+        - values-staging.yaml
   destination:
     server: https://kubernetes.default.svc
-    namespace: user-mgmt
+    namespace: user-mgmt-staging
   syncPolicy:
     automated:
       prune: true

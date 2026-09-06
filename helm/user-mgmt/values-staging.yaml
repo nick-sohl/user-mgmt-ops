@@ -1,0 +1,26 @@
+# Staging environment overrides.
+# Applied on top of values.yaml.
+
+backend:
+  replicaCount: 1
+
+frontend:
+  replicaCount: 1
+  config:
+    nextPublicApiUrl: https://user-mgmt-service-staging.duckdns.org/backend
+
+ingress:
+  host: user-mgmt-service-staging.duckdns.org
+  tls:
+    secretName: user-mgmt-staging-tls
+
+resourceQuota:
+  enabled: true
+  hard:
+    requests.cpu: "500m"
+    requests.memory: 1Gi
+    limits.cpu: "2"
+    limits.memory: 4Gi
+
+networkPolicy:
+  enabled: true

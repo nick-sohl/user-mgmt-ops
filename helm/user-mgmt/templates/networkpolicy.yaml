@@ -1,0 +1,26 @@
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "user-mgmt.fullname" . }}-isolation
+  labels:
+    {{- include "user-mgmt.labels" . | nindent 4 }}
+spec:
+  # Applies to every pod in this namespace.
+  podSelector: {}
+  policyTypes:
+    - Ingress
+  ingress:
+    # Allow traffic from any pod in the same namespace.
+    - from:
+        - podSelector: {}
+    # Allow traffic from explicitly allowlisted namespaces (e.g. ingress-nginx).
+    {{- with .Values.networkPolicy.allowedFromNamespaces }}
+    - from:
+        {{- range . }}
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ . }}
+        {{- end }}
+    {{- end }}
+{{- end }}
