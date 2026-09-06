@@ -1,7 +1,13 @@
 # Production environment overrides.
 # Applied on top of values.yaml.
-# The default values.yaml already targets production sizing and host,
-# so this file mostly enables the isolation policies.
+
+# Replicas dropped to 2 to fit the single-node DO cluster alongside staging.
+# Task 6 will add an HPA that scales up as needed.
+backend:
+  replicaCount: 2
+
+frontend:
+  replicaCount: 2
 
 resourceQuota:
   enabled: true
