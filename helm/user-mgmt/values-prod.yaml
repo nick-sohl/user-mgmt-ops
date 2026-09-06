@@ -9,6 +9,17 @@ backend:
 frontend:
   replicaCount: 2
 
+# Prod postgres uses ~50-100 MiB at rest; smaller request lets it fit the node
+# alongside staging on the single-node DO cluster.
+postgres:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
 resourceQuota:
   enabled: true
   hard:
