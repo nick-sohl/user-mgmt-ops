@@ -5,7 +5,14 @@ metadata:
   labels:
     {{- include "user-mgmt.frontend.labels" . | nindent 4 }}
 spec:
+  {{- if not .Values.frontend.autoscaling.enabled }}
   replicas: {{ .Values.frontend.replicaCount }}
+  {{- end }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: {{ .Values.frontend.strategy.maxSurge }}
+      maxUnavailable: {{ .Values.frontend.strategy.maxUnavailable }}
   selector:
     matchLabels:
       {{- include "user-mgmt.frontend.selectorLabels" . | nindent 6 }}

@@ -3,11 +3,25 @@
 
 backend:
   replicaCount: 1
+  # ResourceQuota only has room for the base pods; no scaling headroom.
+  autoscaling:
+    enabled: false
+  # Single-replica staging cannot honour a PDB, so disable it.
+  podDisruptionBudget:
+    enabled: false
 
 frontend:
   replicaCount: 1
+  autoscaling:
+    enabled: false
+  podDisruptionBudget:
+    enabled: false
   config:
     nextPublicApiUrl: https://user-mgmt-service-staging.duckdns.org/backend
+
+postgres:
+  podDisruptionBudget:
+    enabled: false
 
 ingress:
   host: user-mgmt-service-staging.duckdns.org

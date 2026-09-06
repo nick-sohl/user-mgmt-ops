@@ -1,0 +1,41 @@
+{{- if .Values.backend.podDisruptionBudget.enabled }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "user-mgmt.backend.name" . }}
+  labels:
+    {{- include "user-mgmt.backend.labels" . | nindent 4 }}
+spec:
+  minAvailable: {{ .Values.backend.podDisruptionBudget.minAvailable }}
+  selector:
+    matchLabels:
+      {{- include "user-mgmt.backend.selectorLabels" . | nindent 6 }}
+{{- end }}
+{{- if .Values.frontend.podDisruptionBudget.enabled }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "user-mgmt.frontend.name" . }}
+  labels:
+    {{- include "user-mgmt.frontend.labels" . | nindent 4 }}
+spec:
+  minAvailable: {{ .Values.frontend.podDisruptionBudget.minAvailable }}
+  selector:
+    matchLabels:
+      {{- include "user-mgmt.frontend.selectorLabels" . | nindent 6 }}
+{{- end }}
+{{- if .Values.postgres.podDisruptionBudget.enabled }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "user-mgmt.postgres.name" . }}
+  labels:
+    {{- include "user-mgmt.postgres.labels" . | nindent 4 }}
+spec:
+  minAvailable: {{ .Values.postgres.podDisruptionBudget.minAvailable }}
+  selector:
+    matchLabels:
+      {{- include "user-mgmt.postgres.selectorLabels" . | nindent 6 }}
+{{- end }}

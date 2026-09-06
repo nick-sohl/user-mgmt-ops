@@ -31,6 +31,18 @@ backend:
     limits:
       cpu: 500m
       memory: 1Gi
+  strategy:
+    # maxSurge 0 works on a tight single-node cluster (avoids surge overcommit).
+    maxSurge: 0
+    maxUnavailable: 1
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 4
+    targetCPUUtilizationPercentage: 70
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1
 
 frontend:
   image:
@@ -57,6 +69,17 @@ frontend:
     limits:
       cpu: 300m
       memory: 512Mi
+  strategy:
+    maxSurge: 0
+    maxUnavailable: 1
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 4
+    targetCPUUtilizationPercentage: 70
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1
 
 postgres:
   image:
@@ -81,6 +104,9 @@ postgres:
     limits:
       cpu: 500m
       memory: 1Gi
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1
 
 ingress:
   enabled: true
