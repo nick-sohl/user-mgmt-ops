@@ -75,7 +75,7 @@ variable "mysql" {
   })
   default = {
     name       = "module-service-mysql"
-    version    = "8"
+    version    = "8.4"
     size       = "db-s-1vcpu-1gb"
     node_count = 1
     database   = "module_service"

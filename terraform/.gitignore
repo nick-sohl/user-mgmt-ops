@@ -7,6 +7,13 @@ terraform.tfstate.backup
 # Never commit secrets or the auto-generated import output.
 *.tfvars
 !terraform.tfvars.example
+.envrc
 generated.tf
 generated.tmp.tf
+tfplan.bin
+tfplan
 crash.log
+# generated.tf.raw-example is intentionally kept in the repo as a reference:
+# it is the raw output of `terraform plan -generate-config-out=` before we
+# hoisted values into variables and dropped unused DOKS add-on blocks.
+!generated.tf.raw-example
