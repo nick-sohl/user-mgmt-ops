@@ -2,7 +2,7 @@ nameOverride: ""
 fullnameOverride: ""
 image:
   repository: nicksohl/module-service
-  tag: sha-1e0d0ad
+  tag: sha-1bac056
   pullPolicy: IfNotPresent
 replicaCount: 2
 service:
