@@ -1,16 +1,12 @@
 nameOverride: ""
 fullnameOverride: ""
-
 image:
   repository: nicksohl/module-service
-  tag: main
+  tag: sha-9c9c609
   pullPolicy: IfNotPresent
-
 replicaCount: 2
-
 service:
   port: 8080
-
 # module_service is scaled vertically per the task; no HPA. Requests/limits
 # are sized for stable operation under the k6 load test.
 resources:
@@ -20,15 +16,12 @@ resources:
   limits:
     cpu: 1
     memory: 768Mi
-
 strategy:
   maxSurge: 0
   maxUnavailable: 1
-
 podDisruptionBudget:
   enabled: true
   minAvailable: 1
-
 probes:
   path: /health
   readiness:
@@ -37,18 +30,15 @@ probes:
   liveness:
     initialDelaySeconds: 20
     periodSeconds: 20
-
 # Aufgabe 6 – Managed MySQL. Placeholders; feed from terraform output at deploy time.
 database:
   # SQLAlchemy URL, e.g. mysql+pymysql://user:pass@host:3306/db
   url: "mysql+pymysql://module_service_app:REPLACE_ME@127.0.0.1:3306/module_service"
   # DO Managed MySQL requires TLS; PyMySQL is happy with server-verified TLS when SSL is enabled.
   sslDisabled: false
-
 app:
   logLevel: INFO
   version: "0.1.0"
-
 monitoring:
   enabled: true
   path: /metrics
