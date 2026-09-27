@@ -1,0 +1,46 @@
+{{- if .Values.monitoring.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ include "module-service.fullname" . }}
+  labels:
+    {{- include "module-service.labels" . | nindent 4 }}
+    {{- with .Values.monitoring.additionalLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  groups:
+    - name: module-service.rules
+      rules:
+        - alert: ModuleServiceHighErrorRate
+          expr: |
+            sum by (namespace) (
+              rate(http_requests_total{handler!~"/metrics|/health",status=~"5.."}[5m])
+            )
+            /
+            sum by (namespace) (
+              rate(http_requests_total{handler!~"/metrics|/health"}[5m])
+            ) > 0.05
+          for: 5m
+          labels:
+            severity: warning
+            service: module-service
+          annotations:
+            summary: "module_service has elevated 5xx error rate"
+            description: "More than 5% of module_service requests returned 5xx over 5m."
+        - alert: ModuleServiceHighLatencyP95
+          expr: |
+            histogram_quantile(
+              0.95,
+              sum by (le) (
+                rate(http_request_duration_seconds_bucket{handler!~"/metrics|/health"}[5m])
+              )
+            ) > 0.5
+          for: 10m
+          labels:
+            severity: warning
+            service: module-service
+          annotations:
+            summary: "module_service p95 latency above 500ms"
+            description: "95th percentile latency has exceeded 500ms for 10 minutes."
+{{- end }}

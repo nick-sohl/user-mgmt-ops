@@ -1,0 +1,9 @@
+apiVersion: v2
+name: module-service
+description: |
+  Helm chart for the module_service (Python/FastAPI) that manages teaching
+  modules and holds the user-module assignments in DO Managed MySQL
+  (Aufgabe 6 Microservices).
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
