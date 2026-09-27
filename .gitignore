@@ -1,0 +1,4 @@
+# Helm-managed sub-chart archives — pulled on demand by `helm dependency build`
+# (ArgoCD does this automatically before rendering).
+helm/*/charts/
+helm/*/*.tgz

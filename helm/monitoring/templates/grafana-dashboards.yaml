@@ -1,0 +1,22 @@
+{{/*
+Ships the custom Grafana dashboards under dashboards/*.json as ConfigMaps
+labelled `grafana_dashboard: "1"`. The Grafana sidecar (enabled in values.yaml
+-> kube-prometheus-stack.grafana.sidecar.dashboards) picks them up
+automatically and drops them into the "user-mgmt" folder.
+*/}}
+{{- range $path, $_ := .Files.Glob "dashboards/*.json" }}
+{{- $name := trimSuffix ".json" (base $path) }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-{{ $name }}
+  labels:
+    grafana_dashboard: "1"
+    app.kubernetes.io/component: grafana-dashboard
+  annotations:
+    grafana_folder: "user-mgmt"
+data:
+  {{ $name }}.json: |-
+{{ $.Files.Get $path | indent 4 }}
+{{- end }}
