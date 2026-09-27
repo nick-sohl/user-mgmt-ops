@@ -53,6 +53,19 @@ backend:
     # Label picked up by kube-prometheus-stack's Prometheus ruleSelector/serviceMonitorSelector.
     additionalLabels:
       release: monitoring
+  # Aufgabe 4 – Managed PostgreSQL. Values here are placeholders; the real
+  # host/password come from the Terraform outputs in user-mgmt-ops/terraform/
+  # (see terraform/README.md → "Feeding the Helm chart").
+  #
+  # Provide them at deploy time via `--set-string` or a sealed/external secret,
+  # never hardcode credentials into a values file that gets committed.
+  database:
+    host: postgres-do-user-0000000-0.b.db.ondigitalocean.com
+    port: 25060
+    name: user_mgmt
+    sslMode: require
+    username: user_mgmt_app
+    password: "REPLACE_ME"
 
 frontend:
   image:
@@ -87,33 +100,6 @@ frontend:
     minReplicas: 2
     maxReplicas: 4
     targetCPUUtilizationPercentage: 70
-  podDisruptionBudget:
-    enabled: true
-    minAvailable: 1
-
-postgres:
-  image:
-    repository: postgres
-    tag: 16-alpine
-    pullPolicy: IfNotPresent
-  service:
-    port: 5432
-  db:
-    name: postgres
-  secrets:
-    user: "postgres"
-    password: "postgres"
-  storage:
-    size: 5Gi
-    accessMode: ReadWriteOncePod
-    pgDataSubPath: pgdata
-  resources:
-    requests:
-      cpu: 200m
-      memory: 256Mi
-    limits:
-      cpu: 500m
-      memory: 1Gi
   podDisruptionBudget:
     enabled: true
     minAvailable: 1

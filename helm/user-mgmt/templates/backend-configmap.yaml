@@ -8,4 +8,3 @@ data:
   spring-jpa-hibernate-ddl-auto: {{ .Values.backend.config.springJpaHibernateDdlAuto | quote }}
   jwt-issuer: {{ .Values.backend.config.jwtIssuer | quote }}
   jwt-expiration-millis: {{ .Values.backend.config.jwtExpirationMillis | quote }}
-  spring-datasource-url: {{ include "user-mgmt.postgres.jdbcUrl" . | quote }}

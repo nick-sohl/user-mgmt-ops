@@ -33,18 +33,18 @@ spec:
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "user-mgmt.postgres.name" . }}
-                  key: postgres-user
+                  name: {{ include "user-mgmt.backend.dbSecretName" . }}
+                  key: username
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "user-mgmt.postgres.name" . }}
-                  key: postgres-password
+                  name: {{ include "user-mgmt.backend.dbSecretName" . }}
+                  key: password
             - name: SPRING_DATASOURCE_URL
               valueFrom:
-                configMapKeyRef:
-                  name: {{ include "user-mgmt.backend.name" . }}
-                  key: spring-datasource-url
+                secretKeyRef:
+                  name: {{ include "user-mgmt.backend.dbSecretName" . }}
+                  key: jdbc-url
             - name: SPRING_JPA_HIBERNATE_DDL_AUTO
               valueFrom:
                 configMapKeyRef:

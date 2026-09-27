@@ -19,10 +19,6 @@ frontend:
   config:
     nextPublicApiUrl: https://user-mgmt-service-staging.duckdns.org/backend
 
-postgres:
-  podDisruptionBudget:
-    enabled: false
-
 ingress:
   host: user-mgmt-service-staging.duckdns.org
   tls:
