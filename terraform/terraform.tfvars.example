@@ -1,0 +1,47 @@
+# Copy to terraform.tfvars and fill in your values, or export TF_VAR_* env vars.
+# NEVER commit terraform.tfvars — it's excluded via .gitignore.
+
+# do_token = "dop_v1_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+cluster_id         = "00000000-0000-0000-0000-000000000000"
+cluster_name       = "user-mgmt-cluster"
+region             = "fra1"
+kubernetes_version = "1.31.1-do.4"
+
+node_pool = {
+  name       = "default"
+  size       = "s-2vcpu-4gb"
+  node_count = 1
+  auto_scale = false
+}
+
+cluster_tags = ["user-mgmt", "teko"]
+ha           = false
+
+postgres = {
+  name       = "user-mgmt-postgres"
+  version    = "16"
+  size       = "db-s-1vcpu-1gb"
+  node_count = 1
+  database   = "user_mgmt"
+  username   = "user_mgmt_app"
+  maintenance = {
+    day  = "sunday"
+    hour = "03:00:00"
+  }
+  # Optional operator-workstation CIDRs on top of the K8s cluster rule.
+  # allowed_ip_cidrs = ["203.0.113.4/32"]
+}
+
+mysql = {
+  name       = "module-service-mysql"
+  version    = "8"
+  size       = "db-s-1vcpu-1gb"
+  node_count = 1
+  database   = "module_service"
+  username   = "module_service_app"
+  maintenance = {
+    day  = "sunday"
+    hour = "03:30:00"
+  }
+}

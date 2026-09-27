@@ -1,0 +1,12 @@
+# Terraform state + local provider mirror
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+*.tfstate*
+
+# Never commit secrets or the auto-generated import output.
+*.tfvars
+!terraform.tfvars.example
+generated.tf
+generated.tmp.tf
+crash.log
