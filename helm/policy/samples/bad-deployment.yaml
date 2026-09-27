@@ -1,0 +1,29 @@
+# Intentionally invalid — used to demonstrate Kyverno enforcement.
+#
+# `kubectl apply -f helm/policy/samples/bad-deployment.yaml -n default`
+# must be rejected with an admission error citing:
+#   - disallow-latest-tag (image is `nginx:latest`)
+#   - require-resource-limits (no requests/limits declared)
+#   - require-probes (no probes on the container)
+#   - require-run-as-non-root (no securityContext)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kyverno-demo-bad
+  labels:
+    demo: kyverno-enforcement
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kyverno-demo-bad
+  template:
+    metadata:
+      labels:
+        app: kyverno-demo-bad
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80

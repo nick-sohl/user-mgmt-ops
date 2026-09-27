@@ -1,0 +1,37 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-latest-tag
+  annotations:
+    policies.kyverno.io/title: Disallow :latest image tag
+    policies.kyverno.io/category: Supply Chain
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Rejects Pods whose containers pull an image with the `:latest` tag or no
+      tag at all. Enforces immutable, versioned deployments — matches the
+      GitOps flow that publishes sha-based tags.
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: require-image-tag
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      exclude:
+        any:
+          - resources:
+              namespaces:
+                - kube-system
+                - kube-public
+                - kube-node-lease
+                - policy
+                - argocd
+      validate:
+        message: "Container image must declare an explicit tag (not empty, not :latest)."
+        pattern:
+          spec:
+            containers:
+              - image: "!*:latest & *:*"
