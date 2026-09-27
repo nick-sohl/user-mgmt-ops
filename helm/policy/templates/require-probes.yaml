@@ -33,13 +33,13 @@ spec:
                 - monitoring
                 - loadtest
       validate:
-        message: "Deployments and StatefulSets must declare readinessProbe AND livenessProbe on every container."
+        message: "Deployments and StatefulSets must declare readinessProbe AND livenessProbe (with periodSeconds) on every container."
         pattern:
           spec:
             template:
               spec:
                 containers:
                   - livenessProbe:
-                      "?*": "*"
+                      periodSeconds: ">=1"
                     readinessProbe:
-                      "?*": "*"
+                      periodSeconds: ">=1"
