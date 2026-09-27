@@ -1,0 +1,13 @@
+apiVersion: v2
+name: monitoring
+description: |
+  Umbrella chart that deploys the kube-prometheus-stack (Prometheus, Alertmanager,
+  Grafana, node-exporter, kube-state-metrics) plus custom Grafana dashboards for
+  the user_mgmt_service (Aufgabe 1 Observability).
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+dependencies:
+  - name: kube-prometheus-stack
+    version: 65.5.0
+    repository: https://prometheus-community.github.io/helm-charts

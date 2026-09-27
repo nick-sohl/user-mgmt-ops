@@ -1,0 +1,124 @@
+# kube-prometheus-stack configuration (Aufgabe 1 Observability).
+#
+# Deployed into the `monitoring` namespace via ArgoCD. The stack watches all
+# namespaces for ServiceMonitor / PrometheusRule resources that carry the
+# `release: monitoring` label — user-mgmt-ops sets this label on its own
+# ServiceMonitor and PrometheusRule via values.yaml -> backend.monitoring.additionalLabels.
+
+kube-prometheus-stack:
+
+  fullnameOverride: monitoring
+  cleanPrometheusOperatorObjectNames: true
+
+  # ---------------------------------------------------------------------------
+  # Prometheus
+  # ---------------------------------------------------------------------------
+  prometheus:
+    prometheusSpec:
+      # Discover ServiceMonitors / PrometheusRules across ALL namespaces …
+      serviceMonitorSelectorNilUsesHelmValues: false
+      podMonitorSelectorNilUsesHelmValues: false
+      ruleSelectorNilUsesHelmValues: false
+      probeSelectorNilUsesHelmValues: false
+      # … but only ones that carry `release: monitoring` (matches values.yaml
+      # in helm/user-mgmt/ -> backend.monitoring.additionalLabels).
+      serviceMonitorSelector:
+        matchLabels:
+          release: monitoring
+      ruleSelector:
+        matchLabels:
+          release: monitoring
+      retention: 7d
+      resources:
+        requests:
+          cpu: 100m
+          memory: 512Mi
+        limits:
+          cpu: 500m
+          memory: 1Gi
+      # Persist metrics across pod restarts – on DOKS a PVC lands on do-block-storage.
+      storageSpec:
+        volumeClaimTemplate:
+          spec:
+            accessModes: ["ReadWriteOnce"]
+            resources:
+              requests:
+                storage: 10Gi
+
+  # ---------------------------------------------------------------------------
+  # Alertmanager – webhook receiver (defaults to a null sink; override the URL
+  # via values-prod.yaml / argocd parameter to point at a real Slack/Teams
+  # webhook).
+  # ---------------------------------------------------------------------------
+  alertmanager:
+    alertmanagerSpec:
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+        limits:
+          cpu: 200m
+          memory: 256Mi
+    config:
+      global:
+        resolve_timeout: 5m
+      route:
+        receiver: user-mgmt-webhook
+        group_by: ["alertname", "namespace", "service"]
+        group_wait: 30s
+        group_interval: 5m
+        repeat_interval: 4h
+        routes:
+          - matchers:
+              - service = "user-mgmt-service"
+            receiver: user-mgmt-webhook
+      receivers:
+        - name: user-mgmt-webhook
+          webhook_configs:
+            - url: https://example.com/hook   # override via values-prod.yaml
+              send_resolved: true
+
+  # ---------------------------------------------------------------------------
+  # Grafana – admin password + auto-load dashboards labelled grafana_dashboard=1.
+  # ---------------------------------------------------------------------------
+  grafana:
+    adminPassword: prom-operator  # override via values-prod.yaml / sealed secret
+    defaultDashboardsEnabled: true   # Kubernetes / Nodes / Pods dashboards
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 300m
+        memory: 512Mi
+    sidecar:
+      dashboards:
+        enabled: true
+        label: grafana_dashboard
+        labelValue: "1"
+        searchNamespace: ALL
+        folderAnnotation: grafana_folder
+        provider:
+          allowUiUpdates: true
+      datasources:
+        enabled: true
+        defaultDatasourceEnabled: true
+    service:
+      type: ClusterIP
+
+  # ---------------------------------------------------------------------------
+  # kube-state-metrics + node-exporter cover the "CPU / memory per pod"
+  # acceptance criterion out of the box.
+  # ---------------------------------------------------------------------------
+  kubeStateMetrics:
+    enabled: true
+  nodeExporter:
+    enabled: true
+
+  # Kubelet metrics – required for container_cpu / container_memory series.
+  kubelet:
+    enabled: true
+    serviceMonitor:
+      cAdvisor: true
+      resource: true
+      probes: true

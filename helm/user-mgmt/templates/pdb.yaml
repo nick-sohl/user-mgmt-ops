@@ -25,17 +25,3 @@ spec:
     matchLabels:
       {{- include "user-mgmt.frontend.selectorLabels" . | nindent 6 }}
 {{- end }}
-{{- if .Values.postgres.podDisruptionBudget.enabled }}
----
-apiVersion: policy/v1
-kind: PodDisruptionBudget
-metadata:
-  name: {{ include "user-mgmt.postgres.name" . }}
-  labels:
-    {{- include "user-mgmt.postgres.labels" . | nindent 4 }}
-spec:
-  minAvailable: {{ .Values.postgres.podDisruptionBudget.minAvailable }}
-  selector:
-    matchLabels:
-      {{- include "user-mgmt.postgres.selectorLabels" . | nindent 6 }}
-{{- end }}

@@ -1,0 +1,12 @@
+apiVersion: v2
+name: policy
+description: |
+  Umbrella chart that installs Kyverno plus the ClusterPolicies enforced across
+  the user-mgmt cluster (Aufgabe 5 Policy as Code).
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+dependencies:
+  - name: kyverno
+    version: 3.3.5
+    repository: https://kyverno.github.io/kyverno/

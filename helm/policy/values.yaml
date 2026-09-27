@@ -1,0 +1,77 @@
+# Kyverno installation (Aufgabe 5 Policy as Code).
+#
+# Installs Kyverno into the `policy` namespace via the ArgoCD Application
+# (see argocd/application-policy.yaml).
+
+kyverno:
+
+  fullnameOverride: kyverno
+
+  # HA of the admission controller keeps webhooks available during rolling
+  # upgrades. Set replicas: 1 for a single-node lab cluster.
+  admissionController:
+    replicas: 1
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+  backgroundController:
+    replicas: 1
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+
+  cleanupController:
+    replicas: 1
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+
+  reportsController:
+    replicas: 1
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+
+  # Do not evaluate policies against Kyverno itself, kube-system or the ArgoCD
+  # bootstrap workloads — otherwise the admission controller can wedge the
+  # cluster.
+  config:
+    resourceFilters:
+      - "[Event,*,*]"
+      - "[*,kube-system,*]"
+      - "[*,kube-public,*]"
+      - "[*,kube-node-lease,*]"
+      - "[*,policy,*]"
+      - "[*,argocd,*]"
+      - "[Node,*,*]"
+      - "[APIService,*,*]"
+      - "[TokenReview,*,*]"
+      - "[SubjectAccessReview,*,*]"
+      - "[SelfSubjectAccessReview,*,*]"
+      - "[Binding,*,*]"
+      - "[ReplicaSet,*,*]"
+      - "[AdmissionReport,*,*]"
+      - "[ClusterAdmissionReport,*,*]"
+      - "[BackgroundScanReport,*,*]"
+      - "[ClusterBackgroundScanReport,*,*]"
+      - "[ClusterRole,*,*]"
+      - "[ClusterRoleBinding,*,*]"
+      - "[Role,*,*]"
+      - "[RoleBinding,*,*]"

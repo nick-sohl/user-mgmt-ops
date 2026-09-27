@@ -59,8 +59,11 @@ Per-component names.
 {{- printf "%s-frontend" (include "user-mgmt.fullname" .) }}
 {{- end }}
 
-{{- define "user-mgmt.postgres.name" -}}
-{{- printf "%s-postgres" (include "user-mgmt.fullname" .) }}
+{{/*
+Secret name that holds the Managed PostgreSQL credentials (Aufgabe 4).
+*/}}
+{{- define "user-mgmt.backend.dbSecretName" -}}
+{{- printf "%s-db" (include "user-mgmt.backend.name" .) }}
 {{- end }}
 
 {{/*
@@ -76,11 +79,6 @@ app.kubernetes.io/component: backend
 app.kubernetes.io/component: frontend
 {{- end }}
 
-{{- define "user-mgmt.postgres.selectorLabels" -}}
-{{ include "user-mgmt.selectorLabels" . }}
-app.kubernetes.io/component: postgres
-{{- end }}
-
 {{/*
 Per-component full labels.
 */}}
@@ -94,14 +92,11 @@ app.kubernetes.io/component: backend
 app.kubernetes.io/component: frontend
 {{- end }}
 
-{{- define "user-mgmt.postgres.labels" -}}
-{{ include "user-mgmt.labels" . }}
-app.kubernetes.io/component: postgres
-{{- end }}
-
 {{/*
-JDBC URL for the backend to reach the Postgres Service.
+JDBC URL for the DigitalOcean Managed PostgreSQL cluster (Aufgabe 4).
+sslmode=require is mandatory on DO managed databases.
 */}}
-{{- define "user-mgmt.postgres.jdbcUrl" -}}
-{{- printf "jdbc:postgresql://%s:%d/%s" (include "user-mgmt.postgres.name" .) (int .Values.postgres.service.port) .Values.postgres.db.name }}
+{{- define "user-mgmt.backend.jdbcUrl" -}}
+{{- $db := .Values.backend.database -}}
+{{- printf "jdbc:postgresql://%s:%d/%s?sslmode=%s" $db.host (int $db.port) $db.name $db.sslMode }}
 {{- end }}

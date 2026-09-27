@@ -1,0 +1,25 @@
+# Bundles the k6 load-test into a self-contained job.
+#
+# Apply with:
+#   kubectl apply -k user-mgmt-ops/k6
+# Delete with:
+#   kubectl delete -k user-mgmt-ops/k6
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: loadtest
+
+resources:
+  - manifests/namespace.yaml
+  - manifests/k6-job.yaml
+
+# Generates ConfigMap `k6-scripts` from the JS file in scripts/. The Job
+# mounts it at /scripts/user-mgmt-load.js.
+configMapGenerator:
+  - name: k6-scripts
+    files:
+      - user-mgmt-load.js=scripts/user-mgmt-load.js
+
+generatorOptions:
+  disableNameSuffixHash: true

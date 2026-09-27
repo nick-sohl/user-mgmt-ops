@@ -1,0 +1,21 @@
+{{/*
+Ships Grafana dashboards under dashboards/*.json as ConfigMaps labelled
+`grafana_dashboard: "1"` — the sidecar (see helm/monitoring/values.yaml)
+picks them up and drops them into the "module-service" folder.
+*/}}
+{{- range $path, $_ := .Files.Glob "dashboards/*.json" }}
+{{- $name := trimSuffix ".json" (base $path) }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-{{ $name }}
+  labels:
+    grafana_dashboard: "1"
+    app.kubernetes.io/component: grafana-dashboard
+  annotations:
+    grafana_folder: "module-service"
+data:
+  {{ $name }}.json: |-
+{{ $.Files.Get $path | indent 4 }}
+{{- end }}

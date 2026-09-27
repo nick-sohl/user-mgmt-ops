@@ -1,0 +1,45 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-probes
+  annotations:
+    policies.kyverno.io/title: Require readiness + liveness probes
+    policies.kyverno.io/category: Reliability
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Every long-running container must expose a readinessProbe and a livenessProbe.
+      Without them the Service still routes traffic to unhealthy pods and
+      rolling upgrades ship broken code without noticing.
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: containers-must-declare-probes
+      match:
+        any:
+          - resources:
+              kinds:
+                - Deployment
+                - StatefulSet
+      exclude:
+        any:
+          - resources:
+              namespaces:
+                - kube-system
+                - kube-public
+                - kube-node-lease
+                - policy
+                - argocd
+                - monitoring
+                - loadtest
+      validate:
+        message: "Deployments and StatefulSets must declare readinessProbe AND livenessProbe on every container."
+        pattern:
+          spec:
+            template:
+              spec:
+                containers:
+                  - livenessProbe:
+                      "?*": "*"
+                    readinessProbe:
+                      "?*": "*"
