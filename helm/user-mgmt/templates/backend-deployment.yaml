@@ -28,6 +28,7 @@ spec:
           ports:
             - name: http
               containerPort: {{ .Values.backend.service.port }}
+              protocol: TCP
           env:
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:

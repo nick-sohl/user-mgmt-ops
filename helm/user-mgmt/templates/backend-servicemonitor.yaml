@@ -1,0 +1,23 @@
+{{- if .Values.backend.monitoring.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "user-mgmt.backend.name" . }}
+  labels:
+    {{- include "user-mgmt.backend.labels" . | nindent 4 }}
+    {{- with .Values.backend.monitoring.additionalLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      {{- include "user-mgmt.backend.selectorLabels" . | nindent 6 }}
+  endpoints:
+    - port: http
+      path: {{ .Values.backend.monitoring.path | default "/actuator/prometheus" }}
+      interval: {{ .Values.backend.monitoring.interval | default "30s" }}
+      scrapeTimeout: {{ .Values.backend.monitoring.scrapeTimeout | default "10s" }}
+{{- end }}

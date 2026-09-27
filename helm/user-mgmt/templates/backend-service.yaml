@@ -9,6 +9,7 @@ spec:
   selector:
     {{- include "user-mgmt.backend.selectorLabels" . | nindent 4 }}
   ports:
-    - protocol: TCP
+    - name: http
+      protocol: TCP
       port: {{ .Values.backend.service.port }}
-      targetPort: {{ .Values.backend.service.port }}
+      targetPort: http
