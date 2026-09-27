@@ -1,10 +1,9 @@
 nameOverride: ""
 fullnameOverride: ""
-
 backend:
   image:
     repository: nicksohl/user-management-service
-    tag: sha-01fac1c
+    tag: sha-5cb5575
     pullPolicy: IfNotPresent
   replicaCount: 3
   service:
@@ -66,11 +65,10 @@ backend:
     sslMode: require
     username: user_mgmt_app
     password: "REPLACE_ME"
-
 frontend:
   image:
     repository: nicksohl/user-management-frontend
-    tag: sha-01fac1c
+    tag: sha-5cb5575
     pullPolicy: IfNotPresent
   replicaCount: 3
   service:
@@ -103,7 +101,6 @@ frontend:
   podDisruptionBudget:
     enabled: true
     minAvailable: 1
-
 ingress:
   enabled: true
   className: nginx
@@ -112,7 +109,6 @@ ingress:
   tls:
     enabled: true
     secretName: user-mgmt-tls
-
 certManager:
   clusterIssuer:
     # Whether this release manages (creates) the ClusterIssuer resource.
@@ -122,12 +118,10 @@ certManager:
     name: letsencrypt-prod
     server: https://acme-v02.api.letsencrypt.org/directory
     email: stefan.furrer@edu.teko.ch
-
 # Environment isolation — opt-in per env values file
 resourceQuota:
   enabled: false
   hard: {}
-
 networkPolicy:
   enabled: false
   # Namespaces whose pods are allowed to send ingress traffic (in addition to the
